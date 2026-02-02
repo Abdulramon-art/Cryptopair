@@ -1,0 +1,35 @@
+name: Crypto Pump/Dump Scanner
+
+on:
+  schedule:
+    # Runs every hour at minute 0 (e.g., 1:00, 2:00, 3:00)
+    # Change to '*/30 * * * *' for every 30 minutes
+    - cron: '0 * * * *'
+  
+  workflow_dispatch:  # Allows manual trigger from Actions tab
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install python-binance python-telegram-bot requests
+      
+      - name: Run crypto scanner
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SCAN_INTERVAL_MIN: 60
+          RUN_MODE: once
+        run: |
+          python bot.py
